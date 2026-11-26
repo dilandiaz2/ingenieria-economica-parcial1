@@ -6,6 +6,8 @@ Web interactiva con conceptos, fórmulas y ejercicios propuestos por tema. Los d
 ## Qué incluye
 
 - **Temas**: interés simple, descuento simple, diagrama de tiempo, ecuaciones de valor, interés compuesto, tasas equivalentes/efectiva/nominal, anualidades y gradientes.
+- **Gráficos**: cada tema muestra su gráfico (simple vs. compuesto, saldo del crédito, rentas del gradiente, etc.).
+- **Mis ejercicios**: botón «Guardar en mi historial»; se guarda en el navegador (localStorage) y se puede exportar/importar en JSON.
 - **Autores y fuentes**: edita la lista `INTEGRANTES` al inicio de `temas.js`.
 
 - **Calculadora**: interés, monto, capital, tasa y tiempo, con datos, fórmula y resolución.
