@@ -1,7 +1,7 @@
 (function () {
   "use strict";
   /* ===== EDITA AQUÍ los integrantes del grupo (máx. 5) ===== */
-  var INTEGRANTES = ["Dilan Smith Chamorro Diaz", "Integrante 2", "Integrante 3", "Integrante 4", "Integrante 5"];
+  var INTEGRANTES = ["Barzola Barre Ambar Magdalena", "Chamorro Diaz Dilan Smith", "Cobos Chele Tania Pamela", "Diaz Trujillo Manuel Francisco", "Lindao Yager Roger Clifford"];
 
   var $ = function (s, r) { return (r || document).querySelector(s); };
   var $$ = function (s, r) { return Array.prototype.slice.call((r || document).querySelectorAll(s)); };
@@ -141,6 +141,9 @@
           run: function (v) { g(v.i > 0, "La tasa debe ser mayor que cero."); var j = v.i / 100 / v.p, f = v.f / 100, C = Math.abs(j - f) < 1e-12 ? v.n * v.R1 / (1 + j) : v.R1 / (j - f) * (1 - pw((1 + f) / (1 + j), v.n));
             return { r: ["j = " + P(j) + " · f = " + P(f), "Última renta = " + m(v.R1 * pw(1 + f, v.n - 1)), "Monto M = C(1+j)^n = " + m(C * pw(1 + j, v.n))], z: "Valor presente C = " + m(C) }; } }
       ] },
+    { id: "hist", n: "Mis ejercicios", html: function () {
+      return '<div class="card"><h2>Mis ejercicios guardados</h2><p class="muted small">Se guardan en este navegador (base de datos local). Puedes exportarlos a un archivo y volver a cargarlos en otro equipo.</p><div id="hist-box"></div><div class="row top"><button class="btn" id="h-exp" type="button">Exportar JSON</button><label class="btn ghost" style="margin:4px 0 0;text-align:center;cursor:pointer">Importar JSON<input type="file" id="h-imp" accept="application/json" hidden></label><button class="btn ghost" id="h-clr" type="button">Borrar todo</button></div></div>';
+    } },
     { id: "autores", n: "Autores y fuentes", html: function () {
       return '<div class="card"><h2>Integrantes</h2><ul>' + INTEGRANTES.map(function (x) { return "<li>" + x + "</li>"; }).join("") + '</ul><p class="muted small">Docente: Ing. María del Pilar Avilés Vera · Ingeniería Económica, ciclo 2026-2027 II · Universidad Agraria del Ecuador.</p></div>' +
         '<div class="card"><h2>Fuentes</h2><ul>' +
@@ -151,6 +154,60 @@
     } }
   ];
 
+
+  var COL = ["#1b6e3c", "#c0392b", "#c98a00"];
+  function chart(c) {
+    var W = 560, H = 240, L = 66, R = 14, Tp = 30, B = 40, all = [];
+    c.s.forEach(function (s) { s.p.forEach(function (q) { all.push(q); }); });
+    var ys = all.map(function (q) { return q[1]; }), y1 = Math.max.apply(null, ys), y0 = Math.min(0, Math.min.apply(null, ys));
+    if (y1 === y0) y1 = y0 + 1;
+    var py = function (y) { return Tp + (1 - (y - y0) / (y1 - y0)) * (H - Tp - B); };
+    var o = '<svg viewBox="0 0 ' + W + " " + H + '" role="img" aria-label="' + c.t + '"><text x="' + L + '" y="16" font-size="13" font-weight="700" fill="currentColor">' + c.t + "</text>";
+    for (var i = 0; i <= 4; i++) { var y = y0 + (y1 - y0) * i / 4;
+      o += '<line x1="' + L + '" x2="' + (W - R) + '" y1="' + py(y) + '" y2="' + py(y) + '" stroke="currentColor" opacity=".15"/><text x="' + (L - 6) + '" y="' + (py(y) + 4) + '" text-anchor="end" font-size="11" fill="currentColor" opacity=".75">' + N(y, y1 > 20 ? 0 : 2) + "</text>"; }
+    if (c.bar) {
+      var n = c.s[0].p.length, bw = (W - L - R) / n;
+      c.s[0].p.forEach(function (q, k) { var x = L + k * bw + bw * 0.15, h = Math.abs(py(q[1]) - py(0));
+        o += '<rect x="' + x + '" y="' + Math.min(py(q[1]), py(0)) + '" width="' + bw * 0.7 + '" height="' + h + '" rx="4" fill="' + COL[k % 3] + '"/>' +
+          '<text x="' + (x + bw * 0.35) + '" y="' + (Math.min(py(q[1]), py(0)) - 5) + '" text-anchor="middle" font-size="11" font-weight="600" fill="currentColor">' + N(q[1], 2) + "</text>" +
+          '<text x="' + (x + bw * 0.35) + '" y="' + (H - 18) + '" text-anchor="middle" font-size="11" fill="currentColor" opacity=".8">' + q[0] + "</text>"; });
+    } else {
+      var xs = all.map(function (q) { return q[0]; }), x0 = Math.min.apply(null, xs), x1 = Math.max.apply(null, xs);
+      var px = function (x) { return L + (x - x0) / ((x1 - x0) || 1) * (W - L - R); };
+      c.s.forEach(function (s, k) {
+        o += '<polyline fill="none" stroke="' + COL[k % 3] + '" stroke-width="2.5" points="' + s.p.map(function (q) { return px(q[0]) + "," + py(q[1]); }).join(" ") + '"/>' +
+          '<text x="' + (L + 8 + k * 130) + '" y="' + (H - 4) + '" font-size="11" fill="' + COL[k % 3] + '">● ' + s.n + "</text>"; });
+      o += '<text x="' + L + '" y="' + (H - 20) + '" font-size="11" fill="currentColor" opacity=".75">' + N(x0, 2) + '</text><text x="' + (W - R) + '" y="' + (H - 20) + '" text-anchor="end" font-size="11" fill="currentColor" opacity=".75">' + N(x1, 2) + " " + (c.x || "") + "</text>";
+    }
+    return o + "</svg>";
+  }
+  function pts(n, fn) { var a = [], st = Math.max(1, Math.ceil(n / 40)); for (var k = 0; k <= n; k += st) a.push([k, fn(k)]); if (a[a.length - 1][0] !== n) a.push([n, fn(n)]); return a; }
+  function ex(id, k, fn) { T.filter(function (t) { return t.id === id; })[0].ej[k].gr = fn; }
+  ex("simple", 3, function (v) { return { t: "Capital a invertir por cada monto ($)", bar: 1, s: [{ p: [1, 2, 3].map(function (k) { return ["Monto " + k, v["M" + k] / (1 + v.i / 100 * v["d" + k] / 360)]; }) }] }; });
+  ex("desc", 0, function (v) { var D = v.F * v.d / 100 * v.t / 12; return { t: "Préstamo, descuento y líquido ($)", bar: 1, s: [{ p: [["Préstamo", v.F], ["Descuento", D], ["Líquido", v.F - D]] }] }; });
+  ex("desc", 1, function (v) { var D = v.M * v.d / 100 * v.t / 360; return { t: "Valor nominal, descuento y comercial ($)", bar: 1, s: [{ p: [["Nominal", v.M], ["Descuento", D], ["Comercial", v.M - D]] }] }; });
+  ex("comp", 0, function (v) { return { t: "Interés simple frente a compuesto ($)", x: "años", s: [{ n: "Compuesto", p: pts(v.a, function (t) { return v.C * pw(1 + v.i / 100 / v.p, t * v.p); }) }, { n: "Simple", p: pts(v.a, function (t) { return v.C * (1 + v.i / 100 * t); }) }] }; });
+  ex("tasas", 1, function (v) { return { t: "Tasa nominal frente a efectiva (%)", bar: 1, s: [{ p: [["Nominal", v.i], ["Efectiva", (pw(1 + v.i / 100 / v.p, v.p) - 1) * 100]] }] }; });
+  ex("tasas", 2, function (v) { return { t: "Tasa efectiva anual de cada opción (%)", bar: 1, s: [{ p: [1, 2, 3].map(function (k) { return ["Opción " + k, (pw(1 + v["i" + k] / 100 / v["p" + k], v["p" + k]) - 1) * 100]; }) }] }; });
+  ex("valor", 2, function (v) { return { t: "Valor de cada oferta hoy ($)", bar: 1, s: [{ p: [["Oferta A", v.A], ["B hoy", v.B / pw(1 + v.i / 100, v.t)]] }] }; });
+  ex("anu", 0, function (v) { var j = v.i / 100 / v.p, n = v.a * v.p, k = v.tipo === "ant" ? 1 + j : 1; return { t: "Monto acumulado por período ($)", x: "períodos", s: [{ n: "Monto", p: pts(n, function (q) { return q ? v.R * fs(j, q) * k : 0; }) }] }; });
+  ex("anu", 1, function (v) { var j = v.i / 100 / v.p, n = v.a * v.p, R = v.C / fa(j, n); return { t: "Saldo del crédito por período ($)", x: "períodos", s: [{ n: "Saldo", p: pts(n, function (q) { return Math.max(0, v.C * pw(1 + j, q) - R * fs(j, q)); }) }] }; });
+  ex("grad", 0, function (v) { var a = []; for (var k = 1; k <= Math.min(v.n, 24); k++) a.push(["R" + k, v.R1 + (k - 1) * v.d]); return { t: "Renta de cada período ($)", bar: 1, s: [{ p: a }] }; });
+  ex("grad", 1, function (v) { var a = []; for (var k = 1; k <= Math.min(v.n, 24); k++) a.push(["R" + k, v.R1 * pw(1 + v.f / 100, k - 1)]); return { t: "Renta de cada período ($)", bar: 1, s: [{ p: a }] }; });
+
+  /* ===== Base de datos local (navegador): historial de ejercicios ===== */
+  var KEY = "ie_historial";
+  function leerH() { try { return JSON.parse(localStorage.getItem(KEY)) || []; } catch (e) { return []; } }
+  function guardarH(a) { try { localStorage.setItem(KEY, JSON.stringify(a)); return true; } catch (e) { return false; } }
+  function renderH() {
+    var box = $("#hist-box"), a = leerH();
+    if (!box) return;
+    box.innerHTML = a.length ? '<table class="tbl"><thead><tr><th>Fecha</th><th>Tema</th><th>Ejercicio</th><th>Datos</th><th>Resultado</th><th></th></tr></thead><tbody>' +
+      a.map(function (h, k) { return "<tr><td>" + h.f + "</td><td>" + h.tema + "</td><td>" + h.e + "</td><td class=\"small\">" + Object.keys(h.v).map(function (q) { return q + "=" + h.v[q]; }).join(", ") + "</td><td>" + h.z + '</td><td><button class="x" data-del="' + k + '" type="button" aria-label="Borrar">✕</button></td></tr>'; }).join("") + "</tbody></table>"
+      : '<p class="muted">Aún no hay ejercicios guardados. Resuelve uno y pulsa «Guardar en mi historial».</p>';
+    $$("[data-del]", box).forEach(function (b) { b.addEventListener("click", function () { var x = leerH(); x.splice(+b.getAttribute("data-del"), 1); guardarH(x); renderH(); }); });
+  }
+
   function field(f) {
     var id = f[0], inp;
     if (f[3]) inp = "<select data-k=\"" + id + "\">" + f[3].map(function (o) { return "<option value=\"" + o[0] + "\"" + (o[0] === f[2] ? " selected" : "") + ">" + o[1] + "</option>"; }).join("") + "</select>";
@@ -160,17 +217,19 @@
 
   function exHtml(x, k) {
     return "<details class=\"ex\"" + (k === 0 ? " open" : "") + "><summary><span class=\"n\">" + (k + 1) + "</span>" + x.t + "</summary><div class=\"body\">" +
-      "<p class=\"enun\"></p><div class=\"flds\">" + x.f.map(field).join("") + "</div><div class=\"out\" aria-live=\"polite\"></div></div></details>";
+      "<p class=\"enun\"></p><div class=\"flds\">" + x.f.map(field).join("") + "</div><div class=\"out\" aria-live=\"polite\"></div><div class=\"gr\"></div><button class=\"btn ghost sv\" type=\"button\">Guardar en mi historial</button> <span class=\"small muted msg\"></span></div></details>";
   }
 
   function update(el, x) {
     var v = {}, bad = false;
     $$("[data-k]", el).forEach(function (i) { var k = i.getAttribute("data-k"); if (i.tagName === "SELECT") v[k] = i.value; else { var n = parseFloat(i.value); if (isNaN(n)) bad = true; v[k] = n; } });
     $(".enun", el).textContent = x.e.replace(/\{(\w+)\}/g, function (_, k) { return typeof v[k] === "number" && !isNaN(v[k]) ? N(v[k]) : "…"; });
-    var out = $(".out", el);
+    var out = $(".out", el), gr = $(".gr", el);
+    el._v = v; el._o = null; gr.innerHTML = "";
     if (bad) { out.innerHTML = '<p class="err">Completa todos los datos.</p>'; return; }
     try {
-      var o = x.run(v);
+      var o = x.run(v); el._o = o;
+      if (x.gr) gr.innerHTML = chart(x.gr(v));
       out.innerHTML = '<div class="step"><h3>Fórmula</h3><span class="formula">' + x.fx + '</span></div><div class="step"><h3>Resolución</h3><ul>' +
         o.r.map(function (s) { return "<li>" + s + "</li>"; }).join("") + '</ul></div><div class="final">' + o.z + "</div>";
     } catch (e) { out.innerHTML = '<p class="err">' + (typeof e === "string" ? e : "No se puede calcular con estos datos.") + "</p>"; }
@@ -195,6 +254,19 @@
       update(el, t.ej[k]);
       el.addEventListener("input", function () { update(el, t.ej[k]); });
       el.addEventListener("change", function () { update(el, t.ej[k]); });
+      $(".sv", el).addEventListener("click", function () {
+        if (!el._o) { $(".msg", el).textContent = "Corrige los datos antes de guardar."; return; }
+        var a = leerH(), d = new Date();
+        a.unshift({ f: d.toLocaleDateString("es-EC") + " " + d.toLocaleTimeString("es-EC", { hour: "2-digit", minute: "2-digit" }), tema: t.n, e: t.ej[k].t, v: el._v, z: el._o.z });
+        $(".msg", el).textContent = guardarH(a) ? "Guardado en «Mis ejercicios»." : "No se pudo guardar en este navegador."; renderH();
+      });
     });
   });
+  renderH();
+  var he = $("#h-exp"), hi = $("#h-imp"), hc = $("#h-clr");
+  if (he) {
+    he.addEventListener("click", function () { var u = URL.createObjectURL(new Blob([JSON.stringify(leerH(), null, 2)], { type: "application/json" })), a = document.createElement("a"); a.href = u; a.download = "ejercicios-ingenieria-economica.json"; a.click(); URL.revokeObjectURL(u); });
+    hi.addEventListener("change", function () { var f = hi.files[0]; if (!f) return; var r = new FileReader(); r.onload = function () { try { var x = JSON.parse(r.result); if (Array.isArray(x)) { guardarH(x.concat(leerH())); renderH(); } } catch (e) {} }; r.readAsText(f); hi.value = ""; });
+    hc.addEventListener("click", function () { if (confirm("¿Borrar todos los ejercicios guardados?")) { guardarH([]); renderH(); } });
+  }
 })();
