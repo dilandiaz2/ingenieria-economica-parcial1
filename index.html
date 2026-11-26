@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ingeniería Económica · Primer parcial · UAE</title>
+<meta name="description" content="Conceptos, fórmulas y ejercicios interactivos de interés simple, descuento, interés compuesto, tasas, ecuaciones de valor, anualidades y gradientes. Proyecto grupal de Ingeniería Económica, Universidad Agraria del Ecuador.">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="hero">
+  <div class="wrap">
+    <p class="kicker">Ingeniería Económica · Primer parcial · 2026-2027 ciclo II</p>
+    <h1>Ingeniería Económica</h1>
+    <p class="sub">Conceptos, fórmulas y ejercicios interactivos: cambia los datos y el resultado se recalcula.</p>
+    <p class="uni">Universidad Agraria del Ecuador · Computación en Línea</p>
+  </div>
+</header>
+
+<nav class="tabs wrap" role="tablist" aria-label="Secciones">
+  <button role="tab" aria-selected="true" aria-controls="p-calc" id="t-calc" class="active">Interés simple: calculadora</button>
+  <button role="tab" aria-selected="false" aria-controls="p-ej" id="t-ej">Interés simple: ejemplos</button>
+  <button role="tab" aria-selected="false" aria-controls="p-ev" id="t-ev">Ecuación de valor y diagrama</button>
+  <button role="tab" aria-selected="false" aria-controls="p-teo" id="t-teo">Interés simple: conceptos</button>
+</nav>
+
+<main class="wrap">
+
+<!-- CALCULADORA -->
+<section id="p-calc" class="panel active" role="tabpanel" aria-labelledby="t-calc">
+  <div class="grid2">
+    <div class="card">
+      <h2>¿Qué quieres calcular?</h2>
+      <label>Incógnita
+        <select id="modo">
+          <option value="I">Interés (I)</option>
+          <option value="M">Monto (M)</option>
+          <option value="C_M">Capital (C) conociendo el monto</option>
+          <option value="C_I">Capital (C) conociendo el interés</option>
+          <option value="i">Tasa de interés (i)</option>
+          <option value="n">Tiempo (n)</option>
+        </select>
+      </label>
+
+      <div class="fields">
+        <label data-f="C">Capital (C) en $<input type="number" id="C" step="any" min="0" value="5000"></label>
+        <label data-f="M">Monto (M) en $<input type="number" id="Mf" step="any" min="0" value="5450"></label>
+        <label data-f="I">Interés (I) en $<input type="number" id="If" step="any" min="0" value="450"></label>
+        <div class="row" data-f="i">
+          <label>Tasa (i) en %<input type="number" id="i" step="any" min="0" value="12"></label>
+          <label>Por
+            <select id="iper">
+              <option value="1">año</option>
+              <option value="0.5">semestre</option>
+              <option value="0.25">trimestre</option>
+              <option value="0.083333333333">mes</option>
+            </select>
+          </label>
+        </div>
+        <div class="row" data-f="n">
+          <label>Tiempo (n)<input type="number" id="n" step="any" min="0" value="9"></label>
+          <label>En
+            <select id="nuni">
+              <option value="1">años</option>
+              <option value="0.083333333333" selected>meses</option>
+              <option value="d">días</option>
+            </select>
+          </label>
+        </div>
+        <label data-f="base">Año base para los días
+          <select id="base">
+            <option value="360">Comercial (360 días)</option>
+            <option value="365">Exacto (365 días)</option>
+          </select>
+        </label>
+      </div>
+      <button class="btn" id="calc">Calcular</button>
+    </div>
+
+    <div class="card result" aria-live="polite">
+      <h2>Resolución</h2>
+      <div id="salida"><p class="muted">Completa los datos y pulsa «Calcular».</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- EJERCICIOS -->
+<section id="p-ej" class="panel" role="tabpanel" aria-labelledby="t-ej">
+  <p class="lead">Cada ejercicio sigue el mismo orden: <strong>datos</strong>, <strong>fórmula</strong> y <strong>resolución</strong>.</p>
+  <div id="lista-ej"></div>
+</section>
+
+<!-- ECUACION DE VALOR -->
+<section id="p-ev" class="panel" role="tabpanel" aria-labelledby="t-ev">
+  <div class="grid2">
+    <div class="card">
+      <h2>Datos</h2>
+      <p class="muted small">Deudas que se quieren reemplazar por un solo pago.</p>
+      <div id="deudas"></div>
+      <button class="btn ghost" id="add-deuda" type="button">+ Agregar deuda</button>
+      <div class="row top">
+        <label>Tasa anual (%)<input type="number" id="ev-i" step="any" min="0" value="12"></label>
+        <label>Fecha focal (mes)<input type="number" id="ev-f" step="any" min="0" value="6"></label>
+        <label>Pago único en el mes<input type="number" id="ev-p" step="any" min="0" value="10"></label>
+      </div>
+      <button class="btn" id="ev-calc">Resolver</button>
+    </div>
+    <div class="card result" aria-live="polite">
+      <h2>Resolución</h2>
+      <div id="ev-out"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h2>Diagrama de tiempo</h2>
+    <div class="svgbox"><svg id="diagrama" viewBox="0 0 760 230" role="img" aria-label="Diagrama de tiempo"></svg></div>
+    <p class="muted small">Las flechas rojas son las deudas, la verde es el pago único y la línea punteada marca la fecha focal.</p>
+  </div>
+</section>
+
+<!-- TEORIA -->
+<section id="p-teo" class="panel" role="tabpanel" aria-labelledby="t-teo">
+  <div class="card">
+    <h2>Conceptos de interés simple</h2>
+    <p>En el interés simple el interés se calcula siempre sobre el capital inicial: los intereses de períodos anteriores no se suman a la base. El interés depende del capital, el plazo y la tasa.</p>
+    <p>El monto M es el capital más el interés. El tiempo y la tasa deben estar en la misma unidad; en días se usa año comercial (360) o exacto (365). Una ecuación de valor lleva todas las obligaciones a una fecha focal común para compararlas.</p>
+  </div>
+  <div class="card">
+    <h2>Fórmulas del interés simple</h2>
+    <table class="tbl">
+      <thead><tr><th>Qué se busca</th><th>Fórmula</th></tr></thead>
+      <tbody>
+        <tr><td>Interés</td><td>I = C · i · n</td></tr>
+        <tr><td>Monto</td><td>M = C + I = C (1 + i · n)</td></tr>
+        <tr><td>Capital (con el monto)</td><td>C = M / (1 + i · n)</td></tr>
+        <tr><td>Capital (con el interés)</td><td>C = I / (i · n)</td></tr>
+        <tr><td>Tasa</td><td>i = I / (C · n)</td></tr>
+        <tr><td>Tiempo</td><td>n = I / (C · i)</td></tr>
+        <tr><td>Valor en la fecha focal</td><td>VF = M (1 + i · t) hacia adelante · VP = M / (1 + i · t) hacia atrás</td></tr>
+      </tbody>
+    </table>
+    <p class="small muted">La tasa y el tiempo siempre deben estar en la misma unidad. En días se usa año comercial (360) o exacto (365).</p>
+  </div>
+</section>
+
+</main>
+
+<footer class="wrap foot">
+  <p>Proyecto I parcial de Ingeniería Económica · Universidad Agraria del Ecuador · Guayaquil, 2026</p>
+</footer>
+<script src="temas.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
