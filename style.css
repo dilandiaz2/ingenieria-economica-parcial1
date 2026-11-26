@@ -72,3 +72,6 @@ input,select{display:block;width:100%;margin-top:4px;padding:10px 11px;font:inhe
 .ex .out{margin-top:6px}
 .card ul{margin:0 0 8px;padding-left:20px}
 .formula{overflow-wrap:anywhere}
+.gr svg{width:100%;max-width:640px;height:auto;display:block;margin:8px 0}
+.ex .sv{margin-top:8px}
+.x{background:transparent;border:1px solid var(--line);color:var(--warn);border-radius:9px;padding:6px 10px;cursor:pointer;font:inherit}
